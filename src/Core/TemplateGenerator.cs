@@ -103,10 +103,8 @@ namespace RimDev.Supurlative
                 return Enumerable.Empty<string>();
             }
 
-            var requestProperties =
-                request.GetType()
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .Select((x => x.Name.ToLower()));
+            var requestProperties = TraverseObjectForKeys(request.GetType())
+                .Select(x => x.ToLower());
 
             return requestProperties.Except(routeValues, StringComparer.OrdinalIgnoreCase);
         }
@@ -119,6 +117,37 @@ namespace RimDev.Supurlative
 
             // just return the value
             return (object)ph.Value;
+        }
+
+        private static IList<string> TraverseObjectForKeys(Type type, string parentKey = null, IEnumerable<string> ignore = null)
+        {
+            var keys = new List<string>();
+
+            var properties = type
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(x => x.CanWrite || type.CheckIfAnonymousType())
+                .Where(x => !(ignore ?? new string[0]).Contains(x.Name, StringComparer.InvariantCultureIgnoreCase));
+
+            foreach (var property in properties)
+            {
+                var fullPropertyName = parentKey == null
+                        ? property.Name
+                        : parentKey + "." + property.Name;
+
+                if (property.PropertyType.IsPrimitive
+                    || (!string.IsNullOrEmpty(property.PropertyType.Namespace)
+                    && property.PropertyType.Namespace.StartsWith("System")))
+                {
+                    keys.Add(fullPropertyName);
+                }
+                else
+                {
+                    var results = TraverseObjectForKeys(property.PropertyType, fullPropertyName);
+                    keys.AddRange(results);
+                }
+            }
+
+            return keys;
         }
     }
 }

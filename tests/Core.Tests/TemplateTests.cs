@@ -114,5 +114,42 @@ namespace RimDev.Supurlative.Tests
 
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void Can_generate_a_path_with_anonymous_complex_route_properties()
+        {
+            var expected = "http://localhost:8000/foo/{id}{?bar.abc,bar.def}";
+
+            var actual = Generator.Generate("foo.show", new {Id = 1, Bar = new {Abc = "abc", Def = "def"}});
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Can_generate_a_path_with_concrete_complex_route_properties()
+        {
+            var expected = "http://localhost:8000/foo/{id}{?bar.abc,bar.def}";
+
+            var actual = Generator.Generate("foo.show", new ComplexRouteParameters());
+
+            Assert.Equal(expected, actual);
+        }
+
+        private class ComplexRouteParameters
+        {
+            public ComplexRouteParameters()
+            {
+                this.Bar = new BarType();
+            }
+
+            public BarType Bar { get; set; }
+            public int Id { get; set; }
+
+            public class BarType
+            {
+                public string Abc { get; set; }
+                public string Def { get; set; }
+            }
+        }
     }
 }
