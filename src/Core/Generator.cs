@@ -14,12 +14,16 @@ namespace RimDev.Supurlative
             var generatorOptions = options ?? SupurlativeOptions.Defaults;
             generatorOptions.Validate();
 
+            Options = generatorOptions;
+
             _templateGenerator = new TemplateGenerator(requestMessage, generatorOptions);
             _urlGenerator = new UrlGenerator(requestMessage, generatorOptions);
         }
 
         protected TemplateGenerator _templateGenerator;
         protected UrlGenerator _urlGenerator;
+
+        public SupurlativeOptions Options { get; protected set; }
 
         public Result Generate(string routeName, object request)
         {

@@ -62,19 +62,42 @@ namespace RimDev.Supurlative
                         ?? property.PropertyType;
                 }
 
-                if (property.PropertyType.IsPrimitive
-                    || (!string.IsNullOrEmpty(property.PropertyType.Namespace)
-                    && property.PropertyType.Namespace.StartsWith("System")))
+                var formatterAttribute = property.GetCustomAttributes()
+                    .Where(x => typeof(BaseFormatterAttribute).IsAssignableFrom(x.GetType()))
+                    .Cast<BaseFormatterAttribute>()
+                    .FirstOrDefault();
+
+                if (formatterAttribute == null)
                 {
-                    kvp.Add(fullPropertyName, (value != null ? value.ToString() : string.Empty));
+                    // find any global formatters
+                    formatterAttribute =
+                        options
+                        .Formatters
+                        .Where(x => x.Key == property.PropertyType)
+                        .Select(x => x.Value)
+                        .FirstOrDefault();
+                }
+
+                if (formatterAttribute != null)
+                {
+                    formatterAttribute.Invoke(fullPropertyName, value, kvp, options);
                 }
                 else
                 {
-                    var results = TraverseForKeys(value, options, fullPropertyName);
-
-                    foreach (var result in results)
+                    if (property.PropertyType.IsPrimitive
+                        || (!string.IsNullOrEmpty(property.PropertyType.Namespace)
+                        && property.PropertyType.Namespace.StartsWith("System")))
                     {
-                        kvp.Add(result.Key, result.Value);
+                        kvp.Add(fullPropertyName, (value != null ? value.ToString() : string.Empty));
+                    }
+                    else
+                    {
+                        var results = TraverseForKeys(value, options, fullPropertyName);
+
+                        foreach (var result in results)
+                        {
+                            kvp.Add(result.Key, result.Value);
+                        }
                     }
                 }
             }
