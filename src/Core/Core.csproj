@@ -57,7 +57,9 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Extensions.cs" />
+    <Compile Include="Generator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Result.cs" />
     <Compile Include="TemplateGenerator.cs" />
     <Compile Include="SupurlativeOptions.cs" />
     <Compile Include="UrlGenerator.cs" />
