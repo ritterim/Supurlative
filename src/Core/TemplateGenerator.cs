@@ -17,21 +17,22 @@ namespace RimDev.Supurlative
         private static readonly Regex RouteConstraintCleanup = new Regex("(?<={.*?):.*?}", RegexOptions.Compiled);
         private static readonly Regex OptionalParameterCleanup = new Regex("/{/", RegexOptions.Compiled);
 
-        public TemplateGenerator(HttpRequestMessage httpRequestMessage, UriKind uriKind = UriKind.Absolute)
+        public TemplateGenerator(HttpRequestMessage httpRequestMessage, TemplateGeneratorOptions options = null)
         {
             if (httpRequestMessage == null) throw new ArgumentNullException("httpRequestMessage");
-            if (uriKind == UriKind.RelativeOrAbsolute) throw new ArgumentException("must choose between relative or absolute", "uriKind");
+
+            Options = options ?? TemplateGeneratorOptions.Defaults;
+            Options.Validate();
 
             _httpRequestMessage = CloneHttpRequestMessageWithoutConstraints(httpRequestMessage);
-            UriKind = uriKind;
         }
 
-        public UriKind UriKind { get; protected set; }
+        public TemplateGeneratorOptions Options { get; protected set; }
 
         public string Generate(string routeName, object request = null)
         {
             if (routeName == null) throw new ArgumentNullException("routeName");
-            
+
             var configuration = _httpRequestMessage.GetConfiguration();
 
             if (configuration == null) throw new ArgumentNullException("configuration");
@@ -42,14 +43,14 @@ namespace RimDev.Supurlative
 
             var values = placeHolders
                 .Cast<Match>()
-                .ToDictionary (
-                  match => match.Groups[2].Value, 
+                .ToDictionary(
+                  match => match.Groups[2].Value,
                   match => GetValueForPlaceholder(match, route)
                 );
 
             var helper = new UrlHelper(_httpRequestMessage);
-            var link = UriKind == UriKind.Relative 
-                ? helper.Route(routeName, values) 
+            var link = Options.UriKind == UriKind.Relative
+                ? helper.Route(routeName, values)
                 : helper.Link(routeName, values);
 
             var result = HttpUtility.UrlDecode(link);
@@ -79,7 +80,7 @@ namespace RimDev.Supurlative
             };
 
 
-            var original = httpRequestMessage.GetConfiguration().Routes ;
+            var original = httpRequestMessage.GetConfiguration().Routes;
             var modified = new HttpRouteCollection();
 
             var names = original.GetNames();
@@ -119,7 +120,7 @@ namespace RimDev.Supurlative
             return (object)ph.Value;
         }
 
-        private static IList<string> TraverseObjectForKeys(Type type, string parentKey = null, IEnumerable<string> ignore = null)
+        private IList<string> TraverseObjectForKeys(Type type, string parentKey = null, IEnumerable<string> ignore = null)
         {
             var keys = new List<string>();
 
@@ -132,7 +133,7 @@ namespace RimDev.Supurlative
             {
                 var fullPropertyName = parentKey == null
                         ? property.Name
-                        : parentKey + "." + property.Name;
+                        : string.Format("{0}{1}{2}", parentKey, Options.PropertyNameSeperator, property.Name);
 
                 if (property.PropertyType.IsPrimitive
                     || (!string.IsNullOrEmpty(property.PropertyType.Namespace)

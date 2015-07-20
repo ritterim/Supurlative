@@ -59,6 +59,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TemplateGenerator.cs" />
+    <Compile Include="TemplateOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

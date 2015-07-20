@@ -11,10 +11,10 @@ namespace RimDev.Supurlative.Tests
 
         public TemplateTests()
         {
-            Generator = InitializeGenerator(UriKind.Absolute);
+            Generator = InitializeGenerator();
         }
 
-        private static TemplateGenerator InitializeGenerator(UriKind uriKind)
+        private static TemplateGenerator InitializeGenerator(TemplateGeneratorOptions options = null)
         {
             var routes = new HttpRouteCollection();
             routes.MapHttpRoute("foo.show", "foo/{id}");
@@ -33,7 +33,7 @@ namespace RimDev.Supurlative.Tests
             };
 
             request.SetConfiguration(configuration);
-            return new TemplateGenerator(request, uriKind);
+            return new TemplateGenerator(request, options ?? TemplateGeneratorOptions.Defaults);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace RimDev.Supurlative.Tests
         [Fact]
         public void Can_generate_a_relative_path()
         {
-            var generator = InitializeGenerator(UriKind.Relative);
+            var generator = InitializeGenerator(new TemplateGeneratorOptions { UriKind = UriKind.Relative });
 
             var expected = "/foo/{id}";
             var actual = generator.Generate("foo.show");
