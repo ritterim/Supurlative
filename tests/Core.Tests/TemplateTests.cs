@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web.Http;
 using Xunit;
 
@@ -139,7 +134,7 @@ namespace RimDev.Supurlative.Tests
         {
             public ComplexRouteParameters()
             {
-                this.Bar = new BarType();
+                Bar = new BarType();
             }
 
             public BarType Bar { get; set; }
