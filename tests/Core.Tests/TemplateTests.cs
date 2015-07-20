@@ -14,7 +14,7 @@ namespace RimDev.Supurlative.Tests
             Generator = InitializeGenerator();
         }
 
-        private static TemplateGenerator InitializeGenerator(TemplateGeneratorOptions options = null)
+        private static TemplateGenerator InitializeGenerator(SupurlativeOptions options = null)
         {
             var routes = new HttpRouteCollection();
             routes.MapHttpRoute("foo.show", "foo/{id}");
@@ -33,7 +33,7 @@ namespace RimDev.Supurlative.Tests
             };
 
             request.SetConfiguration(configuration);
-            return new TemplateGenerator(request, options ?? TemplateGeneratorOptions.Defaults);
+            return new TemplateGenerator(request, options ?? SupurlativeOptions.Defaults);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace RimDev.Supurlative.Tests
         [Fact]
         public void Can_generate_a_relative_path()
         {
-            var generator = InitializeGenerator(new TemplateGeneratorOptions { UriKind = UriKind.Relative });
+            var generator = InitializeGenerator(new SupurlativeOptions { UriKind = UriKind.Relative });
 
             var expected = "/foo/{id}";
             var actual = generator.Generate("foo.show");
@@ -126,6 +126,16 @@ namespace RimDev.Supurlative.Tests
             var expected = "http://localhost:8000/foo/{id}{?bar.abc,bar.def}";
 
             var actual = Generator.Generate("foo.show", new ComplexRouteParameters());
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Can_generate_a_path_with_concrete_complex_route_where_property_value_is_null()
+        {
+            var expected = "http://localhost:8000/foo/{id}{?bar.abc,bar.def}";
+
+            var actual = Generator.Generate("foo.show", new ComplexRouteParameters() { Bar = null });
 
             Assert.Equal(expected, actual);
         }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Http;
@@ -17,17 +16,17 @@ namespace RimDev.Supurlative
         private static readonly Regex RouteConstraintCleanup = new Regex("(?<={.*?):.*?}", RegexOptions.Compiled);
         private static readonly Regex OptionalParameterCleanup = new Regex("/{/", RegexOptions.Compiled);
 
-        public TemplateGenerator(HttpRequestMessage httpRequestMessage, TemplateGeneratorOptions options = null)
+        public TemplateGenerator(HttpRequestMessage httpRequestMessage, SupurlativeOptions options = null)
         {
             if (httpRequestMessage == null) throw new ArgumentNullException("httpRequestMessage");
 
-            Options = options ?? TemplateGeneratorOptions.Defaults;
+            Options = options ?? SupurlativeOptions.Defaults;
             Options.Validate();
 
             _httpRequestMessage = CloneHttpRequestMessageWithoutConstraints(httpRequestMessage);
         }
 
-        public TemplateGeneratorOptions Options { get; protected set; }
+        public SupurlativeOptions Options { get; protected set; }
 
         public string Generate(string routeName, object request = null)
         {
@@ -104,8 +103,8 @@ namespace RimDev.Supurlative
                 return Enumerable.Empty<string>();
             }
 
-            var requestProperties = TraverseObjectForKeys(request.GetType())
-                .Select(x => x.ToLower());
+            var requestProperties = request.TraverseForKeys(options: Options)
+                .Select(x => x.Key.ToLower());
 
             return requestProperties.Except(routeValues, StringComparer.OrdinalIgnoreCase);
         }
@@ -118,37 +117,6 @@ namespace RimDev.Supurlative
 
             // just return the value
             return (object)ph.Value;
-        }
-
-        private IList<string> TraverseObjectForKeys(Type type, string parentKey = null, IEnumerable<string> ignore = null)
-        {
-            var keys = new List<string>();
-
-            var properties = type
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(x => x.CanWrite || type.CheckIfAnonymousType())
-                .Where(x => !(ignore ?? new string[0]).Contains(x.Name, StringComparer.InvariantCultureIgnoreCase));
-
-            foreach (var property in properties)
-            {
-                var fullPropertyName = parentKey == null
-                        ? property.Name
-                        : string.Format("{0}{1}{2}", parentKey, Options.PropertyNameSeperator, property.Name);
-
-                if (property.PropertyType.IsPrimitive
-                    || (!string.IsNullOrEmpty(property.PropertyType.Namespace)
-                    && property.PropertyType.Namespace.StartsWith("System")))
-                {
-                    keys.Add(fullPropertyName);
-                }
-                else
-                {
-                    var results = TraverseObjectForKeys(property.PropertyType, fullPropertyName);
-                    keys.AddRange(results);
-                }
-            }
-
-            return keys;
         }
     }
 }

@@ -29,5 +29,57 @@ namespace RimDev.Supurlative
                 && (type.Name.StartsWith("<>") || type.Name.StartsWith("VB$"))
                 && (type.Attributes & TypeAttributes.NotPublic) == TypeAttributes.NotPublic;
         }
+
+        public static IDictionary<string, object> TraverseForKeys(
+            this object target,
+            SupurlativeOptions options,
+            string parentKey = null)
+        {
+            var kvp = new Dictionary<string, object>();
+
+            if (target == null)
+                return kvp;
+
+            var valueType = target as Type == null
+                ? target.GetType()
+                : target as Type;
+
+            var properties = valueType
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(x => x.CanWrite || valueType.CheckIfAnonymousType());
+
+            foreach (var property in properties)
+            {
+                var fullPropertyName = parentKey == null
+                        ? property.Name
+                        : string.Format("{0}{1}{2}", parentKey, options.PropertyNameSeperator, property.Name);
+
+                object value = null;
+
+                if (target as Type == null)
+                {
+                    value = property.GetValue(target, null)
+                        ?? property.PropertyType;
+                }
+
+                if (property.PropertyType.IsPrimitive
+                    || (!string.IsNullOrEmpty(property.PropertyType.Namespace)
+                    && property.PropertyType.Namespace.StartsWith("System")))
+                {
+                    kvp.Add(fullPropertyName, (value != null ? value.ToString() : string.Empty));
+                }
+                else
+                {
+                    var results = TraverseForKeys(value, options, fullPropertyName);
+
+                    foreach (var result in results)
+                    {
+                        kvp.Add(result.Key, result.Value);
+                    }
+                }
+            }
+
+            return kvp.ToDictionary(x => x.Key.ToLower(), x => x.Value);
+        }
     }
 }

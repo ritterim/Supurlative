@@ -2,15 +2,15 @@
 
 namespace RimDev.Supurlative
 {
-    public class TemplateGeneratorOptions
+    public class SupurlativeOptions
     {
-        public static readonly TemplateGeneratorOptions Defaults =
-            new TemplateGeneratorOptions();
+        public static readonly SupurlativeOptions Defaults =
+            new SupurlativeOptions();
 
         public UriKind UriKind { get; set; }
         public string PropertyNameSeperator { get; set; }
 
-        public TemplateGeneratorOptions()
+        public SupurlativeOptions()
         {
             UriKind = UriKind.Absolute;
             PropertyNameSeperator = ".";
