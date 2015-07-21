@@ -1,5 +1,6 @@
 ﻿using PagedList;
 using System;
+using System.Linq.Expressions;
 using System.Net.Http;
 
 namespace RimDev.Supurlative.Paging
@@ -12,12 +13,17 @@ namespace RimDev.Supurlative.Paging
             string pagePropertyName = "page")
             : base(requestMessage, options)
         {
-            PagePropertyName = pagePropertyName;
+            DefaultPagePropertyName = pagePropertyName;
         }
 
-        public string PagePropertyName { get; protected set; }
+        public string DefaultPagePropertyName { get; protected set; }
 
-        public PagingResult Generate(string routeName, object request, IPagedList pagedList)
+        public PagingResult Generate<T>(
+            string routeName,
+            T request,
+            IPagedList pagedList,
+            Expression<Func<T, int>> pagePropertyExpression = null)
+            where T : class
         {
             if (request.GetType().CheckIfAnonymousType())
             {
@@ -29,9 +35,12 @@ namespace RimDev.Supurlative.Paging
 
             if (pagedList != null)
             {
+                var pagePropertyName =
+                    ExtractPropertyNameFromExpression(pagePropertyExpression)
+                    ?? DefaultPagePropertyName;
                 var type = request.GetType();
                 var clone = CloneObject(request);
-                var propertyInfo = type.GetProperty(PagePropertyName);
+                var propertyInfo = type.GetProperty(pagePropertyName);
 
                 if (pagedList.HasNextPage)
                 {
@@ -58,6 +67,23 @@ namespace RimDev.Supurlative.Paging
                 return (T)inst.Invoke(obj, null);
             else
                 return null;
+        }
+
+        private string ExtractPropertyNameFromExpression<T>(Expression<Func<T, int>> expression)
+        {
+            string propertyName = null;
+
+            if (expression != null)
+            {
+                var memberExpression = expression.Body as MemberExpression;
+
+                if (memberExpression != null)
+                {
+                    propertyName = memberExpression.Member.Name;
+                }
+            }
+
+            return propertyName;
         }
     }
 }
