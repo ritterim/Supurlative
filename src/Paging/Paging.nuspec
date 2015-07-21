@@ -13,7 +13,7 @@
 <dependencies>
   <dependency id="Newtonsoft.Json" version="6.0.4" />
   <dependency id="PagedList" version="1.17.0.0" />
-  <dependency id="RimDev.Supurlative" version="0.0.1" />
+  <dependency id="RimDev.Supurlative" version="$version$" />
 </dependencies>
 <files>
 <file src="bin\Release\RimDev.Supurlative.Paging.dll" target="lib\net45"/>
