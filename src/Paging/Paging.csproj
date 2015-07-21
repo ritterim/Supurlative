@@ -7,8 +7,8 @@
     <ProjectGuid>{E8BE90D2-2972-450F-A264-2F4E9E89ED27}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RimDev.Supurlative.PagedList</RootNamespace>
-    <AssemblyName>RimDev.Supurlative.PagedList</AssemblyName>
+    <RootNamespace>RimDev.Supurlative.Paging</RootNamespace>
+    <AssemblyName>RimDev.Supurlative.Paging</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

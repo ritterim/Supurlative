@@ -11,6 +11,6 @@
 <tags>rimdev supurlative webapi</tags>
 </metadata>
 <files>
-<file src="bin\Release\RimDev.Supurlative.Core.dll" target="lib\net45"/>
+<file src="bin\Release\RimDev.Supurlative.dll" target="lib\net45"/>
 </files>
 </package>
