@@ -54,11 +54,11 @@ namespace RimDev.Supurlative
                         ? property.Name
                         : string.Format("{0}{1}{2}", parentKey, options.PropertyNameSeperator, property.Name);
 
-                object value = null;
+                object valueOrPropertyType = null;
 
                 if (target as Type == null)
                 {
-                    value = property.GetValue(target, null)
+                    valueOrPropertyType = property.GetValue(target, null)
                         ?? property.PropertyType;
                 }
 
@@ -73,14 +73,18 @@ namespace RimDev.Supurlative
                     formatterAttribute =
                         options
                         .Formatters
-                        .Where(x => x.Key == property.PropertyType)
-                        .Select(x => x.Value)
+                        .Where(x => x.IsMatch(property.PropertyType, options))
                         .FirstOrDefault();
                 }
 
                 if (formatterAttribute != null)
                 {
-                    formatterAttribute.Invoke(fullPropertyName, value, kvp, options);
+                    formatterAttribute.Invoke(
+                        fullPropertyName,
+                        property.GetValue(target, null),
+                        property.PropertyType,
+                        kvp,
+                        options);
                 }
                 else
                 {
@@ -88,11 +92,11 @@ namespace RimDev.Supurlative
                         || (!string.IsNullOrEmpty(property.PropertyType.Namespace)
                         && property.PropertyType.Namespace.StartsWith("System")))
                     {
-                        kvp.Add(fullPropertyName, (value != null ? value.ToString() : string.Empty));
+                        kvp.Add(fullPropertyName, (valueOrPropertyType != null ? valueOrPropertyType.ToString() : string.Empty));
                     }
                     else
                     {
-                        var results = TraverseForKeys(value, options, fullPropertyName);
+                        var results = TraverseForKeys(valueOrPropertyType, options, fullPropertyName);
 
                         foreach (var result in results)
                         {

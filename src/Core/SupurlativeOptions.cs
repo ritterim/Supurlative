@@ -15,7 +15,7 @@ namespace RimDev.Supurlative
         {
             UriKind = UriKind.Absolute;
             PropertyNameSeperator = ".";
-            Formatters = new Dictionary<Type, BaseFormatterAttribute>();
+            Formatters = new List<BaseFormatterAttribute>();
         }
 
         public void Validate()
@@ -24,25 +24,25 @@ namespace RimDev.Supurlative
             if (PropertyNameSeperator == null) throw new ArgumentNullException("PropertyNameSeperator", "seperator must not be null");
         }
 
-        public IDictionary<Type, BaseFormatterAttribute> Formatters { get; protected set; }
+        public IList<BaseFormatterAttribute> Formatters { get; protected set; }
 
-        public SupurlativeOptions AddFormatter(Type type, BaseFormatterAttribute formatter)
+        public SupurlativeOptions AddFormatter(BaseFormatterAttribute formatter)
         {
             if (formatter == null) throw new ArgumentNullException("formatter");
 
-            Formatters.Add(type, formatter);
+            Formatters.Add(formatter);
             return this;
         }
 
-        public SupurlativeOptions AddFormatter<T>(BaseFormatterAttribute formatter)
+        public SupurlativeOptions AddFormatter<T>()
+            where T : BaseFormatterAttribute
         {
-            return AddFormatter(typeof(T), formatter);
+            return AddFormatter(Activator.CreateInstance<T>());
         }
 
         public SupurlativeOptions AddFormatter<T>(Func<T, string> func)
         {
-            return AddFormatter(typeof(T),
-                new LambdaFormatter((x) => func((T)x)));
+            return AddFormatter(new LambdaFormatter(typeof(T), (x) => func((T)x)));
         }
     }
 }

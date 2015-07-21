@@ -60,6 +60,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="LamdaFormatter.cs" />
+    <Compile Include="NullableFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="TemplateGenerator.cs" />

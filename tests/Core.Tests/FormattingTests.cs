@@ -16,8 +16,11 @@ namespace RimDev.Supurlative.Tests
             configuration.Routes.MapHttpRoute("dictionary", "values");
             configuration.Routes.MapHttpRoute("location", "place");
             configuration.Routes.MapHttpRoute("party", "party");
+            configuration.Routes.MapHttpRoute("nullable", "nullable");
 
             var options = SupurlativeOptions.Defaults;
+            options.AddFormatter<NullableFormatter>();
+
             Generator = new Generator(request, options);
         }
 
@@ -76,6 +79,28 @@ namespace RimDev.Supurlative.Tests
             Assert.Equal(expected, actual.Url);
         }
 
+        [Fact]
+        public void Can_handle_nullable_value_with_value()
+        {
+            var expected = "http://localhost:8000/nullable?age=1";
+
+            var actual = Generator.Generate("nullable", new NullableRequest
+            {
+                Age = 1
+            });
+
+            Assert.Equal(expected, actual.Url);
+        }
+
+        [Fact]
+        public void Can_handle_nullable_value_with_no_value()
+        {
+            var expected = "http://localhost:8000/nullable";
+
+            var actual = Generator.Generate("nullable", new NullableRequest());
+
+            Assert.Equal(expected, actual.Url);
+        }
     }
 
     public class LocationRequest
@@ -106,18 +131,28 @@ namespace RimDev.Supurlative.Tests
         public IDictionary<string, string> Dictionary { get; set; }
     }
 
+    public class NullableRequest
+    {
+        public int? Age { get; set; }
+    }
+
     public class CoordinateFormatter : BaseFormatterAttribute
     {
-        public override void Invoke(string fullPropertyName, object value, IDictionary<string, object> dictionary, SupurlativeOptions options)
+        public override void Invoke(string fullPropertyName, object value, Type valueType, IDictionary<string, object> dictionary, SupurlativeOptions options)
         {
             var coordinates = value as LocationRequest.Coordinate;
             dictionary.Add(fullPropertyName, coordinates == null ? null : coordinates.ToString());
+        }
+
+        public override bool IsMatch(Type currentType, SupurlativeOptions options)
+        {
+            return IsMatch(typeof(LocationRequest.Coordinate), currentType, options);
         }
     }
 
     public class DictionaryFormatter : BaseFormatterAttribute
     {
-        public override void Invoke(string fullPropertyName, object value, IDictionary<string, object> dictionary, SupurlativeOptions options)
+        public override void Invoke(string fullPropertyName, object value, Type valueType, IDictionary<string, object> dictionary, SupurlativeOptions options)
         {
             var valueDictionary = value as Dictionary<string, string>;
 
@@ -125,6 +160,11 @@ namespace RimDev.Supurlative.Tests
             {
                 dictionary.Add(kvp.Key, kvp.Value);
             }
+        }
+
+        public override bool IsMatch(Type currentType, SupurlativeOptions options)
+        {
+            return IsMatch(typeof(Dictionary<string, object>), currentType, options);
         }
     }
 }
