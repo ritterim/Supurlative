@@ -49,13 +49,13 @@ namespace RimDev.Supurlative.Paging
                 if (pagedList.HasNextPage)
                 {
                     propertyInfo.SetValue(clone, pagedList.PageNumber + 1);
-                    result.NextUrl = Generate(routeName, clone).Url;
+                    result.NextUrl = GenerateUrl(routeName, clone);
                 }
 
                 if (pagedList.HasPreviousPage)
                 {
                     propertyInfo.SetValue(clone, pagedList.PageNumber - 1);
-                    result.NextUrl = Generate(routeName, clone).Url;
+                    result.NextUrl = GenerateUrl(routeName, clone);
                 }
             }
 
