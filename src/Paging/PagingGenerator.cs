@@ -5,7 +5,7 @@ using System.Net.Http;
 
 namespace RimDev.Supurlative.Paging
 {
-    public class PagingGenerator : UrlGenerator
+    public class PagingGenerator : Generator
     {
         public PagingGenerator(
             HttpRequestMessage requestMessage,
@@ -30,8 +30,12 @@ namespace RimDev.Supurlative.Paging
                 throw new ArgumentException("request", "Anonymous types are not supported for paging");
             }
 
-            var url = Generate(routeName, request);
-            var result = new PagingResult();
+            var generated = Generate(routeName, request);
+            var result = new PagingResult
+            {
+                Url = generated.Url,
+                Template = generated.Template
+            };
 
             if (pagedList != null)
             {
@@ -45,13 +49,13 @@ namespace RimDev.Supurlative.Paging
                 if (pagedList.HasNextPage)
                 {
                     propertyInfo.SetValue(clone, pagedList.PageNumber + 1);
-                    result.NextUrl = Generate(routeName, clone);
+                    result.NextUrl = GenerateUrl(routeName, clone);
                 }
 
                 if (pagedList.HasPreviousPage)
                 {
                     propertyInfo.SetValue(clone, pagedList.PageNumber - 1);
-                    result.NextUrl = Generate(routeName, clone);
+                    result.NextUrl = GenerateUrl(routeName, clone);
                 }
             }
 

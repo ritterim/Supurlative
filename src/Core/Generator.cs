@@ -27,14 +27,21 @@ namespace RimDev.Supurlative
 
         public Result Generate(string routeName, object request)
         {
-            var template = _templateGenerator.Generate(routeName, request);
-            var url = _urlGenerator.Generate(routeName, request);
-
             return new Result
             {
-                Template = template,
-                Url = url
+                Template = GenerateTemplate(routeName, request),
+                Url = GenerateUrl(routeName, request)
             };
+        }
+
+        public string GenerateUrl(string routeName, object request)
+        {
+            return _urlGenerator.Generate(routeName, request);           
+        }
+
+        public string GenerateTemplate(string routeName, object request)
+        {
+            return _templateGenerator.Generate(routeName, request);
         }
     }
 }
