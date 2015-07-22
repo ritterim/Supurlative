@@ -56,5 +56,27 @@ namespace RimDev.Supurlative.Tests
 
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void Make_sure_null_nested_class_property_values_do_not_show_in_url()
+        {
+            var request = new TestNestedClass { Id = 1 };
+            var result = Generator.Generate("foo.show", request);
+
+            Assert.Equal("http://localhost:8000/foo/1", result);
+        }
+
+        public class TestNestedClass
+        {
+            public int Id { get; set; }
+
+            public NestedClass Filter { get; set; }
+
+            public class NestedClass
+            {
+                public int Level { get; set; }
+            }
+        }
+
     }
 }
