@@ -92,7 +92,11 @@ namespace RimDev.Supurlative
                         || (!string.IsNullOrEmpty(property.PropertyType.Namespace)
                         && property.PropertyType.Namespace.StartsWith("System")))
                     {
-                        kvp.Add(fullPropertyName, (valueOrPropertyType != null ? valueOrPropertyType.ToString() : string.Empty));
+                        var kvpValue = (valueOrPropertyType != null && valueOrPropertyType as Type == null
+                            ? valueOrPropertyType.ToString()
+                            : null);
+
+                        kvp.Add(fullPropertyName, kvpValue);
                     }
                     else
                     {
