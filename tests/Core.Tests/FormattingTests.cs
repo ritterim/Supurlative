@@ -101,6 +101,27 @@ namespace RimDev.Supurlative.Tests
 
             Assert.Equal(expected, actual.Url);
         }
+
+        [Fact]
+        public void Should_throw_formatter_exception_if_formatter_throws_exception_during_generation()
+        {
+            var request = WebApiHelper.GetRequest();
+            var configuration = request.GetConfiguration();
+
+            configuration.Routes.MapHttpRoute("test", "test");
+
+            var options = SupurlativeOptions.Defaults;
+
+            options.AddFormatter<DummyFormatter>();
+
+            var generator = new Generator(request, options);
+            var exception = Assert.Throws<FormatterException>(
+                () => generator.Generate("test", new { Id = 1 }));
+
+            Assert.Equal(
+                "There is a problem invoking the formatter: RimDev.Supurlative.Tests.DummyFormatter.",
+                exception.Message);
+        }
     }
 
     public class LocationRequest
@@ -165,6 +186,19 @@ namespace RimDev.Supurlative.Tests
         public override bool IsMatch(Type currentType, SupurlativeOptions options)
         {
             return IsMatch(typeof(Dictionary<string, object>), currentType, options);
+        }
+    }
+
+    public class DummyFormatter : BaseFormatterAttribute
+    {
+        public override void Invoke(string fullPropertyName, object value, Type valueType, IDictionary<string, object> dictionary, SupurlativeOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool IsMatch(Type currentType, SupurlativeOptions options)
+        {
+            return true;
         }
     }
 }
