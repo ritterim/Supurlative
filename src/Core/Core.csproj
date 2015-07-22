@@ -58,6 +58,7 @@
     </Compile>
     <Compile Include="BaseFormatterAttribute.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="FormatterException.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="LamdaFormatter.cs" />
     <Compile Include="NullableFormatter.cs" />

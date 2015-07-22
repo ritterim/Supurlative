@@ -100,12 +100,21 @@ namespace RimDev.Supurlative
                         ? null
                         : property.GetValue(target, null);
 
-                    formatterAttribute.Invoke(
-                        fullPropertyName,
-                        targetValue,
-                        property.PropertyType,
-                        kvp,
-                        options);
+                    try
+                    {
+                        formatterAttribute.Invoke(
+                            fullPropertyName,
+                            targetValue,
+                            property.PropertyType,
+                            kvp,
+                            options);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new FormatterException(
+                            string.Format("There is a problem invoking the formatter: {0}.", formatterAttribute.GetType().FullName),
+                            ex);
+                    }
                 }
                 else
                 {
