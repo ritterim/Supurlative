@@ -61,7 +61,7 @@ namespace RimDev.Supurlative.Paging
                 if (pagedList.HasPreviousPage)
                 {
                     propertyInfo.SetValue(clone, pagedList.PageNumber - 1);
-                    result.NextUrl = GenerateUrl(routeName, clone);
+                    result.PreviousUrl = GenerateUrl(routeName, clone);
                 }
             }
 
