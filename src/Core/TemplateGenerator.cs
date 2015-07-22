@@ -68,6 +68,11 @@ namespace RimDev.Supurlative
             return result;
         }
 
+        public string Generate<T>(string routeName)
+        {
+            return Generate(routeName, typeof(T));
+        }
+
         private HttpRequestMessage CloneHttpRequestMessageWithoutConstraints(HttpRequestMessage httpRequestMessage)
         {
             var request = new HttpRequestMessage

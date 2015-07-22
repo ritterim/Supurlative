@@ -54,7 +54,7 @@ namespace RimDev.Supurlative
                         ? property.Name
                         : string.Format("{0}{1}{2}", parentKey, options.PropertyNameSeperator, property.Name);
 
-                object valueOrPropertyType = null;
+                object valueOrPropertyType = property.PropertyType;
 
                 if (target as Type == null)
                 {

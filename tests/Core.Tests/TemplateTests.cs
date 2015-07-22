@@ -124,6 +124,16 @@ namespace RimDev.Supurlative.Tests
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void Can_generate_a_path_with_concrete_complex_route_with_generic()
+        {
+            var expected = "http://localhost:8000/foo/{id}{?bar.abc,bar.def}";
+
+            var actual = Generator.Generate<ComplexRouteParameters>("foo.show");
+
+            Assert.Equal(expected, actual);
+        }
+
         private class ComplexRouteParameters
         {
             public ComplexRouteParameters()
