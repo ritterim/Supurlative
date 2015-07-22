@@ -30,7 +30,7 @@ namespace RimDev.Supurlative
                 && (type.Attributes & TypeAttributes.NotPublic) == TypeAttributes.NotPublic;
         }
 
-        public static IDictionary<string, object> TraverseForKeys(
+        internal static IDictionary<string, object> TraverseForKeys(
             this object target,
             SupurlativeOptions options,
             string parentKey = null)
