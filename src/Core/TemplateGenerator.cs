@@ -104,7 +104,10 @@ namespace RimDev.Supurlative
             }
 
             var requestProperties = request.TraverseForKeys(options: Options)
-                .Select(x => x.Key.ToLower());
+                    .Select(x => x.Key);
+
+            if (Options.LowercaseKeys)
+             requestProperties = requestProperties.Select(x => x.ToLower());
 
             return requestProperties.Except(routeValues, StringComparer.OrdinalIgnoreCase);
         }

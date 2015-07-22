@@ -10,12 +10,14 @@ namespace RimDev.Supurlative
 
         public UriKind UriKind { get; set; }
         public string PropertyNameSeperator { get; set; }
+        public bool LowercaseKeys { get; set; }
 
         public SupurlativeOptions()
         {
             UriKind = UriKind.Absolute;
             PropertyNameSeperator = ".";
             Formatters = new List<BaseFormatterAttribute>();
+            LowercaseKeys = true;
         }
 
         public void Validate()

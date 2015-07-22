@@ -106,7 +106,10 @@ namespace RimDev.Supurlative
                 }
             }
 
-            return kvp.ToDictionary(x => x.Key.ToLower(), x => x.Value);
+            return kvp.ToDictionary(
+                x => options.LowercaseKeys ? x.Key.ToLower() : x.Key, 
+                x => x.Value
+            );
         }
     }
 }
