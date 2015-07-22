@@ -46,6 +46,12 @@ namespace RimDev.Supurlative.Paging
                 var clone = CloneObject(request);
                 var propertyInfo = type.GetProperty(pagePropertyName);
 
+                if (propertyInfo == null)
+                    throw new ArgumentException(
+                            string.Format("Property \"{0}\" does not exist on type \"{1}\"." +
+                            " Please use the pagePropertyExpression to define a valid page property.", pagePropertyName, type.FullName)
+                        , pagePropertyName);
+
                 if (pagedList.HasNextPage)
                 {
                     propertyInfo.SetValue(clone, pagedList.PageNumber + 1);

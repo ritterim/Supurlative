@@ -1,5 +1,6 @@
 ﻿using PagedList;
 using RimDev.Supurlative.Tests;
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
@@ -21,17 +22,18 @@ namespace RimDev.Supurlative.Paging.Tests
 
         private readonly IPagedList<int> PagedList;
         private readonly PagingGenerator Generator;
+        private HttpRequestMessage HttpRequest { get; set; }
 
-        private static PagingGenerator InitializeGenerator(SupurlativeOptions options = null)
+        private PagingGenerator InitializeGenerator(SupurlativeOptions options = null)
         {
-            var request = WebApiHelper.GetRequest();
-            var configuration = request.GetConfiguration();
+            HttpRequest = WebApiHelper.GetRequest();
+            var configuration = HttpRequest.GetConfiguration();
 
             configuration.Routes.MapHttpRoute("page.query", "paging");
             configuration.Routes.MapHttpRoute("page.path", "paging/{page}");
             configuration.Routes.MapHttpRoute("newPage.path", "paging/{currentPageNumber}");
 
-            return new PagingGenerator(request);
+            return new PagingGenerator(HttpRequest);
         }
 
         [Fact]
@@ -72,6 +74,24 @@ namespace RimDev.Supurlative.Paging.Tests
 
             Assert.True(result.HasNext);
             Assert.Equal("http://localhost:8000/paging/2?page=1", result.NextUrl);
+        }
+
+        [Fact]
+        public void Can_generate_paged_result_with_previous_url()
+        {
+            var result = Generator.Generate("newPage.path", new Request(), PagedList.ToPagedList(2, 10));
+
+            Assert.True(result.HasPrevious);
+            Assert.Equal("http://localhost:8000/paging/0?page=1", result.PreviousUrl);
+        }
+
+        [Fact]
+        public void Throws_meaningful_exception_when_page_doesnt_exist()
+        {
+            var exception =
+            Assert.Throws<ArgumentException>(
+                () => new PagingGenerator(HttpRequest, Generator.Options, "Poop").Generate("newPage.path", new Request(), PagedList)
+            );
         }
 
         public class Request
