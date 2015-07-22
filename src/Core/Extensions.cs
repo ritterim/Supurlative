@@ -96,9 +96,13 @@ namespace RimDev.Supurlative
 
                 if (formatterAttribute != null)
                 {
+                    var targetValue = target == null || target as Type != null
+                        ? null
+                        : property.GetValue(target, null);
+
                     formatterAttribute.Invoke(
                         fullPropertyName,
-                        property.GetValue(target, null),
+                        targetValue,
                         property.PropertyType,
                         kvp,
                         options);
