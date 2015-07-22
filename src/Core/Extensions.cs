@@ -1,21 +1,38 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Web.Http;
-using System.Web.Http.Routing;
 
 namespace RimDev.Supurlative
 {
     public static class Extensions
     {
-        public static IList<string> GetNames(this HttpRouteCollection routes)
+        public static IList<string> GetNames(this HttpRouteCollection routeCollection)
         {
-            var field = typeof (HttpRouteCollection).GetField("_dictionary",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-            var dictionary = field.GetValue(routes) as IDictionary<string, IHttpRoute>;
-            return dictionary.Keys.ToList();
+            object routes = routeCollection;
+            var fieldName = "_dictionary";
+
+            if (routes == null) return new List<string>();
+
+            var type = routes.GetType();
+
+            if (type.FullName == "System.Web.Http.WebHost.Routing.HostedHttpRouteCollection")
+            {
+                var hostedField = type.GetField("_routeCollection", BindingFlags.NonPublic | BindingFlags.Instance);
+                type = hostedField.FieldType;
+                routes = hostedField.GetValue(routes);
+                fieldName = "_namedMap";
+            }
+
+            var field = type.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+            var dictionary = field.GetValue(routes) as IDictionary;
+
+            return dictionary == null
+                ? new List<string>() 
+                : dictionary.Keys.Cast<string>().ToList();
         }
 
         public static bool CheckIfAnonymousType(this Type type)
