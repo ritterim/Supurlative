@@ -31,7 +31,7 @@ The options class allows you to control the behavior of your generator through s
 1. **UriKind** - Absolute or Relative url generatorOptions
 2. **PropertyNameSeperator** - When dealing with complex objects, the seperator that appears in the parameter name
 3. **Formatters** - a collection of global formatters
-4. LowercaseKeys - Determines whether the url keys will retain their casing, or be lowercased. Defaults to `true`.
+4. **LowercaseKeys** - Determines whether the url keys will retain their casing, or be lowercased. Defaults to `true`.
 
 Use this class to set behavior of the generator it is passed in to.
 
