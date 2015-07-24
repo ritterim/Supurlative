@@ -118,23 +118,30 @@ namespace RimDev.Supurlative
                 }
                 else
                 {
+                    var kvpValue = (valueOrPropertyType != null && valueOrPropertyType as Type == null
+                            ? valueOrPropertyType.ToString()
+                            : null);
+
                     if (property.PropertyType.IsPrimitive
                         || (!string.IsNullOrEmpty(property.PropertyType.Namespace)
                         && property.PropertyType.Namespace.StartsWith("System")))
                     {
-                        var kvpValue = (valueOrPropertyType != null && valueOrPropertyType as Type == null
-                            ? valueOrPropertyType.ToString()
-                            : null);
-
                         kvp.Add(fullPropertyName, kvpValue);
                     }
                     else
                     {
                         var results = TraverseForKeys(valueOrPropertyType, options, fullPropertyName);
 
-                        foreach (var result in results)
+                        if (results.Count() == 0)
                         {
-                            kvp.Add(result.Key, result.Value);
+                            kvp.Add(fullPropertyName, kvpValue);
+                        }
+                        else
+                        {
+                            foreach (var result in results)
+                            {
+                                kvp.Add(result.Key, result.Value);
+                            }
                         }
                     }
                 }
