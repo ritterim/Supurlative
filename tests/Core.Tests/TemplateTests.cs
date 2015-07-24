@@ -134,6 +134,16 @@ namespace RimDev.Supurlative.Tests
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void Can_handle_open_generic_interface()
+        {
+            var expected = "http://localhost:8000/foo/{id}{?test}";
+
+            var actual = Generator.Generate<WithInterface>("foo.show");
+
+            Assert.Equal(expected, actual);
+        }
+
         private class ComplexRouteParameters
         {
             public ComplexRouteParameters()
@@ -149,6 +159,17 @@ namespace RimDev.Supurlative.Tests
                 public string Abc { get; set; }
                 public string Def { get; set; }
             }
+        }
+
+        private class WithInterface
+        {
+            public int Id { get; set; }
+            public ITest<int> Test { get; set; }
+        }
+
+        public interface ITest<T>
+        {
+            T First { get; }
         }
     }
 }
