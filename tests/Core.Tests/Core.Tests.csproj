@@ -83,6 +83,7 @@
     </Compile>
     <Compile Include="ExtensionTests.cs" />
     <Compile Include="FormattingTests.cs" />
+    <Compile Include="SupurlativeOptionsTests.cs" />
     <Compile Include="TemplateUrlTests.cs" />
     <Compile Include="TemplateTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
