@@ -27,7 +27,7 @@ namespace RimDev.Supurlative
 
             var values = request.TraverseForKeys(options: Options);
 
-            var link = UriKind.Absolute == UriKind.Relative
+            var link = Options.UriKind == UriKind.Relative
                 ? urlHelper.Route(routeName, values)
                 : urlHelper.Link(routeName, values);
 
