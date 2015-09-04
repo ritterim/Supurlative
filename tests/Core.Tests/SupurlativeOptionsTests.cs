@@ -78,5 +78,20 @@ namespace RimDev.Supurlative.Tests
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void Can_do_custom_separator_from_anonymous_complex_route_properties()
+        {
+            string expected = _baseUrl + "foo/{id}{?bar:abc,bar:def}";
+            const string routeName = "foo.show";
+            const string routeTemplate = "foo/{id}";
+            string actual = TestHelper.CreateATemplateGenerator(_baseUrl, routeName, routeTemplate,
+                supurlativeOptions: new SupurlativeOptions
+                {
+                    PropertyNameSeperator = ":",
+                })
+                .Generate(routeName, new { Id = 1, Bar = new { Abc = "abc", Def = "def" } });
+            Assert.Equal(expected, actual);
+        }
+
     }
 }
