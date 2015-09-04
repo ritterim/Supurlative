@@ -5,8 +5,13 @@ namespace RimDev.Supurlative
 {
     public class SupurlativeOptions
     {
-        public static readonly SupurlativeOptions Defaults =
-            new SupurlativeOptions();
+        public static SupurlativeOptions Defaults
+        {
+            get
+            {
+                return new SupurlativeOptions();
+            }
+        }
 
         public UriKind UriKind { get; set; }
         public string PropertyNameSeperator { get; set; }
