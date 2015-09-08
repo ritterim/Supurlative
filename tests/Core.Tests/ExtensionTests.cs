@@ -13,9 +13,17 @@ namespace RimDev.Supurlative.Tests
         [Fact]
         public void Can_get_names_from_a_HttpRouteCollection()
         {
-            var routes = WebApiHelper.GetRequest().GetConfiguration().Routes;
+            var routes = new HttpRouteCollection();
+
+            routes.MapHttpRoute("foo.show", "foo/{id}");
+            routes.MapHttpRoute("foo.one.two", "foo/{one}/{two}");
+            routes.MapHttpRoute("bar.show", "bar/{id}", defaults: new { id = RouteParameter.Optional });
+            routes.MapHttpRoute("bar.one.two", "bar/{one}/{two}",
+                defaults: new { one = RouteParameter.Optional, two = RouteParameter.Optional });
+            routes.MapHttpRoute("constraint", "constraints/{id:int}", null, new { id = @"\d+" });
+
             var names = routes.GetNames();
-            Assert.True(names.Count > 0);
+            Assert.True(names.Count == 5);
         }
 
         [Fact]
@@ -33,7 +41,7 @@ namespace RimDev.Supurlative.Tests
             var hostedRoutes = Activator.CreateInstance(type, routeCollection) as HttpRouteCollection;
 
             var names = hostedRoutes.GetNames();
-            Assert.True(names.Count > 0);
+            Assert.True(names.Count == 3);
         }
     }
 }
