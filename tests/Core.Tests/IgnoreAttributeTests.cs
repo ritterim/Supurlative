@@ -12,12 +12,13 @@ namespace RimDev.Supurlative.Tests
                 Id = 3;
                 Foo = null;
                 Bar = 300;
+                Bar2 = null;
             }
 
             public int Id { get; set; }
             public int? Foo { get; set; }
 
-            // Two ways of using the ignore attribute
+            // Two ways of using the ignore attribute (with and without Attribute suffix)
             [Supurlative.IgnoreAttribute]
             public int? Bar { get; set; }
             [Supurlative.Ignore]
@@ -30,7 +31,7 @@ namespace RimDev.Supurlative.Tests
             HasIgnoredParameters _sut = new HasIgnoredParameters();
             var t = typeof(HasIgnoredParameters);
             var pi = t.GetProperty("Foo");
-            var hasIgnoreAttribute = Attribute.IsDefined(pi, typeof(IgnoreAttribute));
+            bool hasIgnoreAttribute = Attribute.IsDefined(pi, typeof(IgnoreAttribute));
             Assert.False(hasIgnoreAttribute);
         }
 
@@ -40,7 +41,7 @@ namespace RimDev.Supurlative.Tests
             HasIgnoredParameters _sut = new HasIgnoredParameters();
             var t = typeof(HasIgnoredParameters);
             var pi = t.GetProperty("Id");
-            var hasIgnoreAttribute = Attribute.IsDefined(pi, typeof(IgnoreAttribute));
+            bool hasIgnoreAttribute = Attribute.IsDefined(pi, typeof(IgnoreAttribute));
             Assert.False(hasIgnoreAttribute);
         }
 
@@ -50,7 +51,7 @@ namespace RimDev.Supurlative.Tests
             HasIgnoredParameters _sut = new HasIgnoredParameters();
             var t = typeof(HasIgnoredParameters);
             var pi = t.GetProperty("Bar");
-            var hasIgnoreAttribute = Attribute.IsDefined(pi, typeof(IgnoreAttribute));
+            bool hasIgnoreAttribute = Attribute.IsDefined(pi, typeof(IgnoreAttribute));
             Assert.True(hasIgnoreAttribute);
         }
 
@@ -60,7 +61,7 @@ namespace RimDev.Supurlative.Tests
             HasIgnoredParameters _sut = new HasIgnoredParameters();
             var t = typeof(HasIgnoredParameters);
             var pi = t.GetProperty("Bar2");
-            var hasIgnoreAttribute = Attribute.IsDefined(pi, typeof(IgnoreAttribute));
+            bool hasIgnoreAttribute = Attribute.IsDefined(pi, typeof(IgnoreAttribute));
             Assert.True(hasIgnoreAttribute);
         }
 
