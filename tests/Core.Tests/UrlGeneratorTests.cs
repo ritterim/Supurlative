@@ -79,6 +79,18 @@ namespace RimDev.Supurlative.Tests
             Assert.Equal(expected, actual);
         }
 
+        public class TestNestedClass
+        {
+            public int Id { get; set; }
+
+            public NestedClass Filter { get; set; }
+
+            public class NestedClass
+            {
+                public int Level { get; set; }
+            }
+        }
+
         [Fact]
         public void Make_sure_null_nested_class_property_values_do_not_show_in_url()
         {
@@ -112,17 +124,6 @@ namespace RimDev.Supurlative.Tests
             Assert.Equal(expected, actual);
         }
 
-        public class TestNestedClass
-        {
-            public int Id { get; set; }
-
-            public NestedClass Filter { get; set; }
-
-            public class NestedClass
-            {
-                public int Level { get; set; }
-            }
-        }
 
     }
 }
