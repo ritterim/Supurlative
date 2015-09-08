@@ -124,6 +124,29 @@ namespace RimDev.Supurlative.Tests
             Assert.Equal(expected, actual);
         }
 
+        private class HasIgnoredProperties
+        {
+            public int Id { get; set; }
+            public int? Foo { get; set; }
+            public string Golf { get; set; }
+            // Bar and Bar2 are ignored properties
+            [Supurlative.IgnoreAttribute]
+            public int? Bar { get; set; }
+            [Supurlative.Ignore]
+            public int? Bar2 { get; set; }
+        }
+
+        [Fact]
+        public void Can_generate_a_path_with_ignored_properties()
+        {
+            string expected = _baseUrl + "some/url/13?golf=yesterday";
+            const string routeName = "someurl.show";
+            const string routeTemplate = "some/url/{id}";
+            string actual = TestHelper.CreateAUrlGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate(routeName, new HasIgnoredProperties { Id = 13, Foo = null, Golf = "yesterday", Bar = null, Bar2 = 888 });
+            Assert.Equal(expected, actual);
+        }
+
 
     }
 }
