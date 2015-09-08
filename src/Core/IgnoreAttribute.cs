@@ -11,5 +11,11 @@ namespace RimDev.Supurlative
         }
 
         public bool Ignore { get; private set; }  
+
+        public static bool HasIgnoreAttribute(Object x, string propertyName)
+        {
+            var pi = x.GetType().GetProperty(propertyName);
+            return Attribute.IsDefined(pi, typeof(IgnoreAttribute));
+        }
     }
 }
