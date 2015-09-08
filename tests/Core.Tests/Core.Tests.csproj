@@ -90,7 +90,6 @@
     <Compile Include="TemplateTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UrlGeneratorTests.cs" />
-    <Compile Include="WebApiHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
