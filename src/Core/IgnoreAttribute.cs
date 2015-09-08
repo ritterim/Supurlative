@@ -12,7 +12,7 @@ namespace RimDev.Supurlative
 
         public bool Ignore { get; private set; }  
 
-        public static bool HasIgnoreAttribute(Object x, string propertyName)
+        public static bool PropertyHasIgnoreAttribute(Object x, string propertyName)
         {
             var pi = x.GetType().GetProperty(propertyName);
             if (pi == null) return false;

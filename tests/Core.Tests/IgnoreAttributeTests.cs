@@ -69,35 +69,35 @@ namespace RimDev.Supurlative.Tests
         public void Verify_that_Foo_is_visible_using_HasIgnoreAttribute()
         {
             HasIgnoredParameters _sut = new HasIgnoredParameters();
-            Assert.False(IgnoreAttribute.HasIgnoreAttribute(_sut,"Foo"));
+            Assert.False(IgnoreAttribute.PropertyHasIgnoreAttribute(_sut,"Foo"));
         }
 
         [Fact]
         public void Verify_that_Id_is_visible_using_HasIgnoreAttribute()
         {
             HasIgnoredParameters _sut = new HasIgnoredParameters();
-            Assert.False(IgnoreAttribute.HasIgnoreAttribute(_sut,"Id"));
+            Assert.False(IgnoreAttribute.PropertyHasIgnoreAttribute(_sut,"Id"));
         }
 
         [Fact]
         public void Verify_that_Bar_is_ignored_using_HasIgnoreAttribute()
         {
             HasIgnoredParameters _sut = new HasIgnoredParameters();
-            Assert.True(IgnoreAttribute.HasIgnoreAttribute(_sut, "Bar"));
+            Assert.True(IgnoreAttribute.PropertyHasIgnoreAttribute(_sut, "Bar"));
         }
 
         [Fact]
         public void Verify_that_Bar2_is_ignored_using_HasIgnoreAttribute()
         {
             HasIgnoredParameters _sut = new HasIgnoredParameters();
-            Assert.True(IgnoreAttribute.HasIgnoreAttribute(_sut, "Bar2"));
+            Assert.True(IgnoreAttribute.PropertyHasIgnoreAttribute(_sut, "Bar2"));
         }
 
         [Fact]
         public void Check_HasIgnoreAttribute_handles_invalid_property_name()
         {
             HasIgnoredParameters _sut = new HasIgnoredParameters();
-            Assert.False(IgnoreAttribute.HasIgnoreAttribute(_sut, "NOSUCHPROPERTY"));
+            Assert.False(IgnoreAttribute.PropertyHasIgnoreAttribute(_sut, "NOSUCHPROPERTY"));
         }
 
     }
