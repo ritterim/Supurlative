@@ -5,9 +5,9 @@ namespace RimDev.Supurlative.Tests
 {
     public class IgnoreAttributeTests
     {
-        private class HasIgnoredParameters
+        private class HasIgnoredProperties
         {
-            public HasIgnoredParameters()
+            public HasIgnoredProperties()
             {
                 Id = 3;
                 Foo = null;
@@ -28,8 +28,8 @@ namespace RimDev.Supurlative.Tests
         [Fact]
         public void Verify_that_Foo_is_visible()
         {
-            HasIgnoredParameters _sut = new HasIgnoredParameters();
-            var t = typeof(HasIgnoredParameters);
+            HasIgnoredProperties _sut = new HasIgnoredProperties();
+            var t = typeof(HasIgnoredProperties);
             var pi = t.GetProperty("Foo");
             bool hasIgnoreAttribute = Attribute.IsDefined(pi, typeof(IgnoreAttribute));
             Assert.False(hasIgnoreAttribute);
@@ -38,8 +38,8 @@ namespace RimDev.Supurlative.Tests
         [Fact]
         public void Verify_that_Id_is_visible()
         {
-            HasIgnoredParameters _sut = new HasIgnoredParameters();
-            var t = typeof(HasIgnoredParameters);
+            HasIgnoredProperties _sut = new HasIgnoredProperties();
+            var t = typeof(HasIgnoredProperties);
             var pi = t.GetProperty("Id");
             bool hasIgnoreAttribute = Attribute.IsDefined(pi, typeof(IgnoreAttribute));
             Assert.False(hasIgnoreAttribute);
@@ -48,8 +48,8 @@ namespace RimDev.Supurlative.Tests
         [Fact]
         public void Verify_that_Bar_is_ignored()
         {
-            HasIgnoredParameters _sut = new HasIgnoredParameters();
-            var t = typeof(HasIgnoredParameters);
+            HasIgnoredProperties _sut = new HasIgnoredProperties();
+            var t = typeof(HasIgnoredProperties);
             var pi = t.GetProperty("Bar");
             bool hasIgnoreAttribute = Attribute.IsDefined(pi, typeof(IgnoreAttribute));
             Assert.True(hasIgnoreAttribute);
@@ -58,8 +58,8 @@ namespace RimDev.Supurlative.Tests
         [Fact]
         public void Verify_that_Bar2_is_ignored()
         {
-            HasIgnoredParameters _sut = new HasIgnoredParameters();
-            var t = typeof(HasIgnoredParameters);
+            HasIgnoredProperties _sut = new HasIgnoredProperties();
+            var t = typeof(HasIgnoredProperties);
             var pi = t.GetProperty("Bar2");
             bool hasIgnoreAttribute = Attribute.IsDefined(pi, typeof(IgnoreAttribute));
             Assert.True(hasIgnoreAttribute);

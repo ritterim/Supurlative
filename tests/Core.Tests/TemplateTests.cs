@@ -209,11 +209,12 @@ namespace RimDev.Supurlative.Tests
             Assert.Equal(expected, actual);
         }
 
-        private class HasIgnoredParameters
+        private class HasIgnoredProperties
         {
             public int Id { get; set; }
             public int? Foo { get; set; }
             public string Golf { get; set; }
+            // Bar and Bar2 are ignored properties
             [Supurlative.IgnoreAttribute]
             public int? Bar { get; set; }
             [Supurlative.Ignore]
@@ -227,7 +228,7 @@ namespace RimDev.Supurlative.Tests
             const string routeName = "someurl.show";
             const string routeTemplate = "someurl/{id}";
             string actual = TestHelper.CreateATemplateGenerator(_baseUrl, routeName, routeTemplate)
-                .Generate<HasIgnoredParameters>(routeName);
+                .Generate<HasIgnoredProperties>(routeName);
             Assert.Equal(expected, actual);
         }
 
