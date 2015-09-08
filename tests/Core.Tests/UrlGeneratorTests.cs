@@ -137,13 +137,24 @@ namespace RimDev.Supurlative.Tests
         }
 
         [Fact]
-        public void Can_generate_a_path_with_ignored_properties()
+        public void Can_generate_a_path_with_ignored_properties1()
         {
             string expected = _baseUrl + "some/url/13?golf=yesterday";
             const string routeName = "someurl.show";
             const string routeTemplate = "some/url/{id}";
             string actual = TestHelper.CreateAUrlGenerator(_baseUrl, routeName, routeTemplate)
                 .Generate(routeName, new HasIgnoredProperties { Id = 13, Foo = null, Golf = "yesterday", Bar = null, Bar2 = 888 });
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Can_generate_a_path_with_ignored_properties2()
+        {
+            string expected = _baseUrl + "some/url/42?foo=13&golf=birdie";
+            const string routeName = "someurl.show";
+            const string routeTemplate = "some/url/{id}";
+            string actual = TestHelper.CreateAUrlGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate(routeName, new HasIgnoredProperties { Id = 42, Foo = 13, Golf = "birdie", Bar = 777, Bar2 = null });
             Assert.Equal(expected, actual);
         }
 
