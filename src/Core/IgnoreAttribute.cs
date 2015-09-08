@@ -1,22 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace RimDev.Supurlative
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class IgnoreAttribute : Attribute
+    public class IgnoreAttribute : BaseFormatterAttribute
     {
-        public IgnoreAttribute()
+        public override void Invoke(string fullPropertyName, object value, Type valueType, IDictionary<string, object> dictionary, SupurlativeOptions options)
         {
-            Ignore = true;
+            return;
         }
 
-        public bool Ignore { get; private set; }  
-
-        public static bool PropertyHasIgnoreAttribute(Object x, string propertyName)
+        public override bool IsMatch(Type currentType, SupurlativeOptions options)
         {
-            var pi = x.GetType().GetProperty(propertyName);
-            if (pi == null) return false;
-            return Attribute.IsDefined(pi, typeof(IgnoreAttribute));
+            return false;
         }
     }
 }
