@@ -93,6 +93,13 @@ namespace RimDev.Supurlative.Tests
             Assert.True(IgnoreAttribute.HasIgnoreAttribute(_sut, "Bar2"));
         }
 
+        [Fact]
+        public void Check_HasIgnoreAttribute_handles_invalid_property_name()
+        {
+            HasIgnoredParameters _sut = new HasIgnoredParameters();
+            Assert.False(IgnoreAttribute.HasIgnoreAttribute(_sut, "NOSUCHPROPERTY"));
+        }
+
         //[Fact]
         //public void Can_ignore_property()
         //{

@@ -15,6 +15,7 @@ namespace RimDev.Supurlative
         public static bool HasIgnoreAttribute(Object x, string propertyName)
         {
             var pi = x.GetType().GetProperty(propertyName);
+            if (pi == null) return false;
             return Attribute.IsDefined(pi, typeof(IgnoreAttribute));
         }
     }
