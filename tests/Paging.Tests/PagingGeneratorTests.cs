@@ -8,12 +8,12 @@ using Xunit;
 
 namespace RimDev.Supurlative.Paging.Tests
 {
-    public class PagingGneratorTests
+    public class PagingGeneratorTests
     {
-        public PagingGneratorTests()
-        {
-            Generator = InitializeGenerator();
+        const string _baseUrl = "http://localhost:8000/";
 
+        public PagingGeneratorTests()
+        {
             PagedList = Enumerable
                 .Range(1, 100)
                 .ToPagedList(1, 10);
@@ -21,83 +21,96 @@ namespace RimDev.Supurlative.Paging.Tests
         }
 
         private readonly IPagedList<int> PagedList;
-        private readonly PagingGenerator Generator;
-        private HttpRequestMessage HttpRequest { get; set; }
-
-        private PagingGenerator InitializeGenerator(SupurlativeOptions options = null)
-        {
-            HttpRequest = WebApiHelper.GetRequest();
-            var configuration = HttpRequest.GetConfiguration();
-
-            configuration.Routes.MapHttpRoute("page.query", "paging");
-            configuration.Routes.MapHttpRoute("page.path", "paging/{page}");
-            configuration.Routes.MapHttpRoute("newPage.path", "paging/{currentPageNumber}");
-
-            return new PagingGenerator(HttpRequest);
-        }
-
         [Fact]
         public void Can_generate_paged_result_with_query_string()
         {
-           var result =  Generator.Generate("page.query", new Request { page = 1 }, PagedList);
+            string expectedUrl = _baseUrl + "paging?page=2&currentpagenumber=0";
+            const string routeName = "page.query";
+            const string routeTemplate = "paging";
+
+            PagingResult result = PagingTestHelper.CreateAPagingGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate(routeName, new Request { page = 1 }, PagedList);
 
             Assert.True(result.HasNext);
             Assert.False(result.HasPrevious);
-
-            Assert.Equal("http://localhost:8000/paging?page=2&currentpagenumber=0", result.NextUrl);
+            Assert.Equal(expectedUrl, result.NextUrl);
         }
 
         [Fact]
         public void Can_generate_paged_result_with_query_string_and_page_expression()
         {
-            var result = Generator.Generate("page.query", new Request { page = 1 }, PagedList, x => x.currentPageNumber);
+            string expectedUrl = _baseUrl + "paging?page=1&currentpagenumber=2";
+            const string routeName = "page.query";
+            const string routeTemplate = "paging";
+
+            PagingResult result = PagingTestHelper.CreateAPagingGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate(routeName, new Request { page = 1 }, PagedList, x => x.currentPageNumber);
 
             Assert.True(result.HasNext);
             Assert.False(result.HasPrevious);
-
-            Assert.Equal("http://localhost:8000/paging?page=1&currentpagenumber=2", result.NextUrl);
+            Assert.Equal(expectedUrl, result.NextUrl);
         }
 
         [Fact]
         public void Can_generate_paged_result_with_path()
         {
-            var result = Generator.Generate("page.path", new Request { page = 1 }, PagedList);
+            string expectedUrl = _baseUrl + "paging/2?currentpagenumber=0";
+            const string routeName = "page.path";
+            const string routeTemplate = "paging/{page}";
+
+            PagingResult result = PagingTestHelper.CreateAPagingGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate(routeName, new Request { page = 1 }, PagedList);
 
             Assert.True(result.HasNext);
-            Assert.Equal("http://localhost:8000/paging/2?currentpagenumber=0", result.NextUrl);
+            Assert.Equal(expectedUrl, result.NextUrl);
         }
 
         [Fact]
         public void Can_generate_paged_result_with_path_and_page_expression()
         {
-            var result = Generator.Generate("newPage.path", new Request { page = 1 }, PagedList, x => x.currentPageNumber);
+            string expectedUrl = _baseUrl + "paging/2?page=1";
+            const string routeName = "newPage.path";
+            const string routeTemplate = "paging/{currentPageNumber}";
+
+            PagingResult result = PagingTestHelper.CreateAPagingGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate(routeName, new Request { page = 1 }, PagedList, x => x.currentPageNumber);
 
             Assert.True(result.HasNext);
-            Assert.Equal("http://localhost:8000/paging/2?page=1", result.NextUrl);
+            Assert.Equal(expectedUrl, result.NextUrl);
         }
 
         [Fact]
         public void Can_generate_paged_result_with_previous_url()
         {
-            var result = Generator.Generate("newPage.path", new Request(), PagedList.ToPagedList(2, 10));
+            string expectedUrl = _baseUrl + "paging/0?page=1";
+            const string routeName = "newPage.path";
+            const string routeTemplate = "paging/{currentPageNumber}";
+
+            PagingResult result = PagingTestHelper.CreateAPagingGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate(routeName, new Request { page = 1 }, PagedList.ToPagedList(2, 10));
 
             Assert.True(result.HasPrevious);
-            Assert.Equal("http://localhost:8000/paging/0?page=1", result.PreviousUrl);
+            Assert.Equal(expectedUrl, result.PreviousUrl);
         }
 
         [Fact]
         public void Throws_meaningful_exception_when_page_doesnt_exist()
         {
+            const string routeName = "newPage.path";
+            const string routeTemplate = "paging/{currentPageNumber}";
+
+            HttpRequestMessage request;
+            request = TestHelper.CreateAHttpRequestMessage(_baseUrl, routeName, routeTemplate);
+
             var exception =
             Assert.Throws<ArgumentException>(
-                () => new PagingGenerator(HttpRequest, Generator.Options, "Poop").Generate("newPage.path", new Request(), PagedList)
+                () => new PagingGenerator(request, SupurlativeOptions.Defaults, "DoesNotExist").Generate(routeName, new Request(), PagedList)
             );
         }
 
         public class Request
         {
             public int page { get; set; }
-
             public int currentPageNumber { get; set; }
         }
     }
