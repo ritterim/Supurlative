@@ -79,6 +79,18 @@ namespace RimDev.Supurlative.Tests
             Assert.Equal(expected, actual);
         }
 
+        public class TestNestedClass
+        {
+            public int Id { get; set; }
+
+            public NestedClass Filter { get; set; }
+
+            public class NestedClass
+            {
+                public int Level { get; set; }
+            }
+        }
+
         [Fact]
         public void Make_sure_null_nested_class_property_values_do_not_show_in_url()
         {
@@ -112,17 +124,40 @@ namespace RimDev.Supurlative.Tests
             Assert.Equal(expected, actual);
         }
 
-        public class TestNestedClass
+        private class HasIgnoredProperties
         {
             public int Id { get; set; }
-
-            public NestedClass Filter { get; set; }
-
-            public class NestedClass
-            {
-                public int Level { get; set; }
-            }
+            public int? Foo { get; set; }
+            public string Golf { get; set; }
+            // Bar and Bar2 are ignored properties
+            [Supurlative.IgnoreAttribute]
+            public int? Bar { get; set; }
+            [Supurlative.Ignore]
+            public int? Bar2 { get; set; }
         }
+
+        [Fact]
+        public void Can_generate_a_path_with_ignored_properties1()
+        {
+            string expected = _baseUrl + "some/url/13?golf=yesterday";
+            const string routeName = "someurl.show";
+            const string routeTemplate = "some/url/{id}";
+            string actual = TestHelper.CreateAUrlGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate(routeName, new HasIgnoredProperties { Id = 13, Foo = null, Golf = "yesterday", Bar = null, Bar2 = 888 });
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Can_generate_a_path_with_ignored_properties2()
+        {
+            string expected = _baseUrl + "some/url/42?foo=13&golf=birdie";
+            const string routeName = "someurl.show";
+            const string routeTemplate = "some/url/{id}";
+            string actual = TestHelper.CreateAUrlGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate(routeName, new HasIgnoredProperties { Id = 42, Foo = 13, Golf = "birdie", Bar = 777, Bar2 = null });
+            Assert.Equal(expected, actual);
+        }
+
 
     }
 }

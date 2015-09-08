@@ -137,45 +137,23 @@ namespace RimDev.Supurlative.Tests
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void Can_generate_a_path_with_concrete_complex_route_properties()
+        private class WithInterface
         {
-            string expected = _baseUrl + "foo/{id}{?bar.abc,bar.def}";
-            const string routeName = "foo.show";
-            const string routeTemplate = "foo/{id}";
-            string actual = TestHelper.CreateATemplateGenerator(_baseUrl, routeName, routeTemplate)
-                .Generate(routeName, new ComplexRouteParameters());
-            Assert.Equal(expected, actual);
+            public int Id { get; set; }
+            public ITest<int> Test { get; set; }
         }
 
-        [Fact]
-        public void Can_generate_a_path_with_concrete_complex_route_where_property_value_is_null()
+        public interface ITest<T>
         {
-            string expected = _baseUrl + "foo/{id}{?bar.abc,bar.def}";
-            const string routeName = "foo.show";
-            const string routeTemplate = "foo/{id}";
-            string actual = TestHelper.CreateATemplateGenerator(_baseUrl, routeName, routeTemplate)
-                .Generate(routeName, new ComplexRouteParameters() { Bar = null });
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void Can_generate_a_path_with_concrete_complex_route_with_generic()
-        {
-            string expected = _baseUrl + "foo/{id}{?bar.abc,bar.def}";
-            const string routeName = "foo.show";
-            const string routeTemplate = "foo/{id}";
-            string actual = TestHelper.CreateATemplateGenerator(_baseUrl, routeName, routeTemplate)
-                .Generate<ComplexRouteParameters>(routeName);
-            Assert.Equal(expected, actual);
+            T First { get; }
         }
 
         [Fact]
         public void Can_handle_open_generic_interface()
         {
-            string expected = _baseUrl + "foo/{id}{?test}";
-            const string routeName = "foo.show";
-            const string routeTemplate = "foo/{id}";
+            string expected = _baseUrl + "someurl/{id}{?test}";
+            const string routeName = "someurl.show";
+            const string routeTemplate = "someurl/{id}";
             string actual = TestHelper.CreateATemplateGenerator(_baseUrl, routeName, routeTemplate)
                 .Generate<WithInterface>(routeName);
             Assert.Equal(expected, actual);
@@ -198,15 +176,61 @@ namespace RimDev.Supurlative.Tests
             }
         }
 
-        private class WithInterface
+        [Fact]
+        public void Can_generate_a_path_with_concrete_complex_route_properties()
         {
-            public int Id { get; set; }
-            public ITest<int> Test { get; set; }
+            string expected = _baseUrl + "someurl/{id}{?bar.abc,bar.def}";
+            const string routeName = "someurl.show";
+            const string routeTemplate = "someurl/{id}";
+            string actual = TestHelper.CreateATemplateGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate(routeName, new ComplexRouteParameters());
+            Assert.Equal(expected, actual);
         }
 
-        public interface ITest<T>
+        [Fact]
+        public void Can_generate_a_path_with_concrete_complex_route_where_property_value_is_null()
         {
-            T First { get; }
+            string expected = _baseUrl + "someurl/{id}{?bar.abc,bar.def}";
+            const string routeName = "someurl.show";
+            const string routeTemplate = "someurl/{id}";
+            string actual = TestHelper.CreateATemplateGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate(routeName, new ComplexRouteParameters() { Bar = null });
+            Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void Can_generate_a_path_with_concrete_complex_route_with_generic()
+        {
+            string expected = _baseUrl + "someurl/{id}{?bar.abc,bar.def}";
+            const string routeName = "someurl.show";
+            const string routeTemplate = "someurl/{id}";
+            string actual = TestHelper.CreateATemplateGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate<ComplexRouteParameters>(routeName);
+            Assert.Equal(expected, actual);
+        }
+
+        private class HasIgnoredProperties
+        {
+            public int Id { get; set; }
+            public int? Foo { get; set; }
+            public string Golf { get; set; }
+            // Bar and Bar2 are ignored properties
+            [Supurlative.IgnoreAttribute]
+            public int? Bar { get; set; }
+            [Supurlative.Ignore]
+            public int? Bar2 { get; set; }
+        }
+
+        [Fact]
+        public void Can_generate_a_path_without_ignored_properties()
+        {
+            string expected = _baseUrl + "someurl/{id}{?foo,golf}";
+            const string routeName = "someurl.show";
+            const string routeTemplate = "someurl/{id}";
+            string actual = TestHelper.CreateATemplateGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate<HasIgnoredProperties>(routeName);
+            Assert.Equal(expected, actual);
+        }
+
     }
 }

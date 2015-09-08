@@ -81,6 +81,7 @@
     <Compile Include="..\..\common\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="IgnoreAttributeTests.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="ExtensionTests.cs" />
     <Compile Include="FormattingTests.cs" />
