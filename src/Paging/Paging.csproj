@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DynamicBinderExtensions.cs" />
     <Compile Include="IPagedList.cs" />
     <Compile Include="IPaged.cs" />
     <Compile Include="PagedListShim.cs" />
