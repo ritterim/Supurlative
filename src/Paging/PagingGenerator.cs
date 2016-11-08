@@ -1,7 +1,7 @@
-﻿using PagedList;
-using System;
+﻿using System;
 using System.Linq.Expressions;
 using System.Net.Http;
+using ImpromptuInterface;
 
 namespace RimDev.Supurlative.Paging
 {
@@ -21,8 +21,8 @@ namespace RimDev.Supurlative.Paging
         public PagingResult Generate<T>(
             string routeName,
             T request,
-            IPagedList pagedList,
-            Expression<Func<T, int>> pagePropertyExpression = null)
+            object paged,
+            Expression<Func<T, int?>> pagePropertyExpression = null)
             where T : class
         {
             if (request.GetType().CheckIfAnonymousType())
@@ -37,7 +37,9 @@ namespace RimDev.Supurlative.Paging
                 Template = generated.Template
             };
 
-            if (pagedList != null)
+            var target = GetTypedPagedObject(paged);
+
+            if (target != null)
             {
                 var pagePropertyName =
                     ExtractPropertyNameFromExpression(pagePropertyExpression)
@@ -48,24 +50,51 @@ namespace RimDev.Supurlative.Paging
 
                 if (propertyInfo == null)
                     throw new ArgumentException(
-                            string.Format("Property \"{0}\" does not exist on type \"{1}\"." +
-                            " Please use the pagePropertyExpression to define a valid page property.", pagePropertyName, type.FullName)
+                        $"Property \"{pagePropertyName}\" does not exist on type \"{type.FullName}\"." +
+                        " Please use the pagePropertyExpression to define a valid page property."
                         , pagePropertyName);
 
-                if (pagedList.HasNextPage)
+                if (HasNextPage(target))
                 {
-                    propertyInfo.SetValue(clone, pagedList.PageNumber + 1);
+                    propertyInfo.SetValue(clone, target.Page  + 1);
                     result.NextUrl = GenerateUrl(routeName, clone);
                 }
 
-                if (pagedList.HasPreviousPage)
+                if (HasPreviousPage(target))
                 {
-                    propertyInfo.SetValue(clone, pagedList.PageNumber - 1);
+                    propertyInfo.SetValue(clone, target.Page - 1);
                     result.PreviousUrl = GenerateUrl(routeName, clone);
                 }
             }
 
             return result;
+        }
+
+        private static IPaged GetTypedPagedObject(object input)
+        {
+            if (input == null)
+                return null;
+
+            IPagedList pagedList;
+            return IsPagedListCompatible(input, out pagedList)
+                ? new PagedListShim(pagedList)
+                : input.ActLike<IPaged>();
+        }
+
+        private static bool IsPagedListCompatible(object paged, out IPagedList pagedList)
+        {
+            var target = paged.ActLike<IPagedList>();
+
+            if (target.Has(x => x.TotalItemCount) &&
+                target.Has(x => x.PageSize) &&
+                target.Has(x => x.PageNumber))
+            {
+                pagedList = target;
+                return true;
+            }
+
+            pagedList = null;
+            return false;
         }
 
         public static T CloneObject<T>(T obj) where T : class
@@ -79,21 +108,43 @@ namespace RimDev.Supurlative.Paging
                 return null;
         }
 
-        private string ExtractPropertyNameFromExpression<T>(Expression<Func<T, int>> expression)
+        private static string ExtractPropertyNameFromExpression<T>(Expression<Func<T, int?>> expression)
         {
             string propertyName = null;
 
             if (expression != null)
             {
-                var memberExpression = expression.Body as MemberExpression;
+                var unaryExpression = expression.Body as UnaryExpression;
 
-                if (memberExpression != null)
+                if (unaryExpression != null)
                 {
-                    propertyName = memberExpression.Member.Name;
+                    var memberExpression = unaryExpression.Operand as MemberExpression;
+                    if (memberExpression != null)
+                    {
+                        propertyName = memberExpression.Member.Name;
+                    }
                 }
             }
 
             return propertyName;
+        }
+
+        private static bool HasNextPage(IPaged target)
+        {
+            if (target.TotalItemCount.HasValue && target.PageSize.HasValue)
+            {
+                var pageCount = target?.TotalItemCount > 0
+                    ? (int)Math.Ceiling((double)target.TotalItemCount / (double)target.PageSize)
+                    : 0;
+                return target?.Page < pageCount;
+            }
+
+            return false;
+        }
+
+        private static bool HasPreviousPage(IPaged target)
+        {
+            return target?.Page > 1;
         }
     }
 }

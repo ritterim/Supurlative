@@ -10,7 +10,7 @@ To get started using **SupUrlative**, first install the library from Nuget using
 PM> Install-Package RimDev.Supurlative
 ```
 
-You may optionally add the **Paging** extension if you are going to use the PagedList Nuget package.
+You may optionally add the **Paging** extension if you are going to use **any** PagedList Nuget package.
 
 ```
 PM> Install-Package RimDev.Supurlative.Paging
@@ -151,6 +151,35 @@ var result = Generator.Generate("page.query",
 // http://localhost:8000/paging?page=2
 result.NextUrl;
 ```
+
+The `PagedList` property can have one of two contracts:
+
+The first is the common PagedList interface found in many common PagedList
+implementations.
+
+```csharp
+public interface IPagedList
+{
+    int PageNumber { get; }
+    int PageSize { get; }
+    int TotalItemCount { get; }
+}
+```
+
+The second interface is something proprietary to the Supurlative package.
+
+```csharp
+public interface IPaged
+{
+    int? Page { get; }
+    int? PageSize { get; }
+    int? TotalItemCount { get; }
+}
+```
+
+Note: You **do not** have to explicitly implement these interfaces on your types, you
+just have to have these properties on the parameter object you are passing
+to the `Generate` method.
 
 When generating paging urls, you will get a `PagingResult` from the generator. The following are the properties you will have access from the result.
 
