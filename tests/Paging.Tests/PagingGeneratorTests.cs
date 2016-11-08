@@ -3,7 +3,6 @@ using RimDev.Supurlative.Tests;
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Web.Http;
 using Xunit;
 
 namespace RimDev.Supurlative.Paging.Tests
@@ -17,7 +16,13 @@ namespace RimDev.Supurlative.Paging.Tests
             PagedList = Enumerable
                 .Range(1, 100)
                 .ToPagedList(1, 10);
+        }
 
+        public class OurPagedList
+        {
+            public int? Page { get; } = 1;
+            public int? PageSize { get; } = 10;
+            public int? TotalItemCount { get; } = 100;
         }
 
         private readonly IPagedList<int> PagedList;
@@ -30,6 +35,21 @@ namespace RimDev.Supurlative.Paging.Tests
 
             PagingResult result = PagingTestHelper.CreateAPagingGenerator(_baseUrl, routeName, routeTemplate)
                 .Generate(routeName, new Request { page = 1 }, PagedList);
+
+            Assert.True(result.HasNext);
+            Assert.False(result.HasPrevious);
+            Assert.Equal(expectedUrl, result.NextUrl);
+        }
+
+        [Fact]
+        public void Can_generate_paged_result_with_query_string_using_object_like_IPagedTarget()
+        {
+            string expectedUrl = _baseUrl + "paging?page=2&currentpagenumber=0";
+            const string routeName = "page.query";
+            const string routeTemplate = "paging";
+
+            PagingResult result = PagingTestHelper.CreateAPagingGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate(routeName, new Request { page = 1 }, new OurPagedList());
 
             Assert.True(result.HasNext);
             Assert.False(result.HasPrevious);
