@@ -11,7 +11,6 @@
 <tags>rimdev supurlative webapi</tags>
 <dependencies>
   <dependency id="Newtonsoft.Json" version="6.0.4" />
-  <dependency id="PagedList" version="1.17.0.0" />
   <dependency id="ImpromptuInterface" version="6.2.2" />
   <dependency id="RimDev.Supurlative" version="$version$" />
 </dependencies>
