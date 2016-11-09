@@ -114,15 +114,23 @@ namespace RimDev.Supurlative.Paging
 
             if (expression != null)
             {
-                var unaryExpression = expression.Body as UnaryExpression;
+                // When the actual expression property is `int?`.
+                var memberExpression = expression.Body as MemberExpression;
 
-                if (unaryExpression != null)
+                // An additional try if expression property is `int`.
+                if (memberExpression == null)
                 {
-                    var memberExpression = unaryExpression.Operand as MemberExpression;
-                    if (memberExpression != null)
+                    var unaryExpression = expression.Body as UnaryExpression;
+
+                    if (unaryExpression != null)
                     {
-                        propertyName = memberExpression.Member.Name;
+                        memberExpression = unaryExpression.Operand as MemberExpression;
                     }
+                }
+
+                if (memberExpression != null)
+                {
+                    propertyName = memberExpression.Member.Name;
                 }
             }
 
