@@ -100,6 +100,20 @@ namespace RimDev.Supurlative.Paging.Tests
         }
 
         [Fact]
+        public void Can_generate_paged_result_with_path_and_nullable_page_expression()
+        {
+            string expectedUrl = _baseUrl + "paging/2?page=1";
+            const string routeName = "newPage.path";
+            const string routeTemplate = "paging/{currentPageNumber}";
+
+            PagingResult result = PagingTestHelper.CreateAPagingGenerator(_baseUrl, routeName, routeTemplate)
+                .Generate(routeName, new RequestNullable { page = 1 }, PagedList, x => x.currentPageNumber);
+
+            Assert.True(result.HasNext);
+            Assert.Equal(expectedUrl, result.NextUrl);
+        }
+
+        [Fact]
         public void Can_generate_paged_result_with_previous_url()
         {
             string expectedUrl = _baseUrl + "paging/0?page=1";
@@ -132,6 +146,12 @@ namespace RimDev.Supurlative.Paging.Tests
         {
             public int page { get; set; }
             public int currentPageNumber { get; set; }
+        }
+
+        public class RequestNullable
+        {
+            public int? page { get; set; }
+            public int? currentPageNumber { get; set; }
         }
     }
 }
